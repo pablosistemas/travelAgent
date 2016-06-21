@@ -1,0 +1,137 @@
+<head>
+  <title>simple</title>
+</head>
+
+<body>
+  <h1>Tabela dinamica: Planejamento de viagens</h1>
+
+  {{> travelAgent }}
+
+</body>
+
+<template name="travelAgent">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4">
+                <h5>Cidades</h5>
+            </div>
+            <div class="col-md-4">
+                <div class="col-md-6">
+                    <h5>Chegada mais cedo</h5>
+                </div>
+                <div class="col-md-6">
+                    <h5>Chegada mais tarde</h5>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="col-md-6">
+                    <h5>Min permanencia</h5>
+                </div>
+                <div class="col-md-6">
+                    <h5>Max permanencia</h5>
+                </div>
+            </div>
+        </div>
+
+        {{>cidades}}
+
+        <br><br>
+
+        {{#if isSubmit}}
+            {{>tabelaDinamica}}
+        {{/if}}
+
+    </div>
+</template>
+
+<template name="tabelaDinamica">
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <th> </th>
+            {{#each colunasDatasEach}}
+                <td>{{this}}</td>
+            {{/each}}
+        </tr>
+        </thead>
+        <tbody>
+            {{#each todasCidades}}
+                <tr>
+                    <th>{{this}}</th>
+                    <!--<td align="center"><span class="glyphicon glyphicon-asterisk"></span></td>-->
+                    {{#each colunasVaziasEach}}
+                        <td id={{..}}_{{this}}></td>
+                    {{/each}}
+                </tr>
+            {{/each}}
+            <!--{{setaCidadesTabela}}
+            {{setaIdLinhasColunas}}-->
+        </tbody>
+
+    </table>
+</template>
+
+<template name="celula" >
+    <tr>
+        <td>{{cidade}}</td>
+        <!--<td align="center"><span class="glyphicon glyphicon-asterisk"></span></td>-->
+        {{#each colunasVaziasEach}}
+            <td id={{this}}> </td>
+        {{/each}}
+    </tr>
+</template>
+
+<template name="cidades">
+    <form>
+        <div class="row">
+            <div class="form-group col-md-4">
+                <input type="text" class="form-control" id="cidade0" placeholder="Cidade origem">
+            </div>
+
+            <div class="form-group  col-md-4">
+                <div class="form-group  col-md-6">
+                    <input type="number" class="form-control" id="partidaMaisCedo" placeholder="">
+                </div>
+                <div class="form-group  col-md-6">
+                    <input type="number" class="form-control" id="partidaMaisTarde" placeholder="partidaMaisTarde">
+                </div>
+            </div>
+        </div>
+        {{#each criaFormsCidades}}
+            <div class="row">
+                <div class="form-group col-md-4">
+                    <input type="text" class="form-control" id={{this}} placeholder={{this}}>
+                </div>
+
+                <div class="form-group  col-md-4">
+                    <div class="form-group  col-md-6">
+                        <input type="number" class="form-control" id="diaMaisCedoChegada{{this}}" placeholder="">
+                    </div>
+                    <div class="form-group  col-md-6">
+                        <input type="number" class="form-control" id="diaMaisTardeChegada{{this}}" placeholder="">
+                    </div>
+                </div>
+
+                <div class="form-group  col-md-4">
+                    <div class="form-group  col-md-6">
+                        <input type="number" class="form-control" id="minPermanencia{{this}}" placeholder="">
+                    </div>
+                    <div class="form-group  col-md-6">
+                        <input type="number" class="form-control" id="maxPermanencia{{this}}" placeholder="">
+                    </div>
+                </div>
+            </div>
+        {{/each}}
+        <button type="button" class="btn btn-default" id="addCidade"><span class="glyphicon glyphicon-plus"></span></button>
+        <button type="button" class="btn btn-default" id="delCidade"><span class="glyphicon glyphicon-minus"></span></button>
+        <button type="button" class="btn btn-default" id="submit">Submit</button>
+    </form>
+</template>
+
+<template name="linhaCidade">
+    <td id="nomeCidade"></td>
+    {{ setaIdLinhaAtual linhaAtual='{{cidadeOrigem}}' }}
+    {{#each colunasVaziasEach}}
+        <td id="{{this}}"></td>
+    {{/each}}
+</template>
