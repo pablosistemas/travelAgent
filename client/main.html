@@ -57,12 +57,12 @@
         <tbody>
             {{#each todasCidades}}
                 <tr>
-                    <th>{{this}}</th>
-                    <!--<td align="center"><span class="glyphicon glyphicon-asterisk"></span></td>-->
+                    <th id={{this}}>{{this}}</th>
                     {{#each colunasVaziasEach}}
-                        <td id={{..}}_{{this}}></td>
+                        {{>celula}}
                     {{/each}}
                 </tr>
+
             {{/each}}
             <!--{{setaCidadesTabela}}
             {{setaIdLinhasColunas}}-->
@@ -71,14 +71,8 @@
     </table>
 </template>
 
-<template name="celula" >
-    <tr>
-        <td>{{cidade}}</td>
-        <!--<td align="center"><span class="glyphicon glyphicon-asterisk"></span></td>-->
-        {{#each colunasVaziasEach}}
-            <td id={{this}}> </td>
-        {{/each}}
-    </tr>
+<template name="celula">
+    <td class="celula" id={{..}}_{{this}}></td>
 </template>
 
 <template name="cidades">
