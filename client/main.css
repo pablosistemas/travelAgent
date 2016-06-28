@@ -4,5 +4,28 @@
 }
 
 .celulaDestino {
+    background-color: #87CEFA !important;
+}
+
+.celulaPermanencia {
+    background: url(./placeholder.png) no-repeat center;
+
+}
+
+.squarePermanencia {
+    width: 25px;
+    height: 25px;
+    background: url(./placeholder.png) no-repeat center;
+}
+
+.squareViagem {
+    width: 25px;
+    height: 25px;
     background-color: #87CEFA;
+}
+
+.squarePartida {
+    width: 25px;
+    height: 25px;
+    background-color: #008080;
 }

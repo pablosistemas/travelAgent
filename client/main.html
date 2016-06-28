@@ -41,6 +41,8 @@
             {{>tabelaDinamica}}
         {{/if}}
 
+        {{>legenda}}
+
     </div>
 </template>
 
@@ -126,6 +128,30 @@
     <td id="nomeCidade"></td>
     {{ setaIdLinhaAtual linhaAtual='{{cidadeOrigem}}' }}
     {{#each colunasVaziasEach}}
-        <td id="{{this}}"></td>
+        <td id="{{this}}"><i class=""></i></td>
     {{/each}}
+</template>
+
+<template name="legenda">
+    <div class="col-md-3">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="squarePartida"></div>
+            </div>
+            <div class="col-md-8">Partida</div>
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="squareViagem"></div>
+            </div>
+            <div class="col-md-8">Viagem</div>
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="squarePermanencia"></div>
+            </div>
+            <div class="col-md-8">Permanência</div>
+        </div>
+
+    </div>
 </template>
