@@ -8,8 +8,19 @@
 }
 
 .celulaPermanencia {
+    background: url(./placeholderObrigatorio.png) no-repeat center;
+
+}
+
+.celulaPermanenciaOpcional {
     background: url(./placeholder.png) no-repeat center;
 
+}
+
+.squarePermanenciaObrigatoria {
+    width: 25px;
+    height: 25px;
+    background: url(./placeholderObrigatorio.png) no-repeat center;
 }
 
 .squarePermanencia {
@@ -17,7 +28,6 @@
     height: 25px;
     background: url(./placeholder.png) no-repeat center;
 }
-
 .squareViagem {
     width: 25px;
     height: 25px;
