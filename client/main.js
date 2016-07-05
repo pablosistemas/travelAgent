@@ -49,10 +49,10 @@ function subIntervalosPossiveis() {
             auxMax.add(maxPermanencias[elem]);
 
         }
-        for(let intCity=1; intCity < numLinhasTabela.get(); intCity++){
+        for (let intCity = 1; intCity < numLinhasTabela.get(); intCity++) {
             infAnt = intervalos[i][int][0];
             supAnt = intervalos[i][int][1];
-            intervalos[i][intCity]=[parseInt(infAnt)+parseInt(minPermanencias.min())+1,parseInt(supAnt)+parseInt(minPermanencias.max())+2];
+            intervalos[i][intCity] = [parseInt(infAnt) + parseInt(minPermanencias.min()) + 1, parseInt(supAnt) + parseInt(minPermanencias.max()) + 2];
             int++;
             minPermanencias.remove(minPermanencias.min());
             maxPermanencias.remove(maxPermanencias.max());
@@ -63,7 +63,7 @@ function subIntervalosPossiveis() {
     }
 }
 
-function leperm() {
+function validaPermanencias() {
     let minPermanencia;
     let maxPermanencia;
     let somaMaxPermanencia = 0;
@@ -78,17 +78,19 @@ function leperm() {
             isSubmitted.set(false);
             minPermanencias = [];
             maxPermanencias = [];
-            break;
+            return false;
         }
         minPermanencias.push(minPermanencia);
         maxPermanencias.push(maxPermanencia);
         somaMaxPermanencia += parseInt(maxPermanencia);
     }
 
+    let retCode = true;
     if (somaMaxPermanencia != "" || somaMaxPermanencia != null) {
-        maxpermMenorTrinta(somaMaxPermanencia);
+        retCode = maxpermMenorTrinta(somaMaxPermanencia);
     }
 
+    return retCode;
 }
 
 function maxpermMenorTrinta(somaMaxPermanencia) {
@@ -101,13 +103,14 @@ function maxpermMenorTrinta(somaMaxPermanencia) {
 
             isSubmitted.set(false);
 
-            break;
+            return false;
+
         } else {
             lechegadas();
         }
 
     }
-
+    return true;
 }
 
 function lechegadas() {
@@ -116,8 +119,8 @@ function lechegadas() {
     let chegadamaisTarde;
 
     for (let i = 1; i <= parseInt(numLinhasTabela.get()); i++) {
-        chegadamaiscedo = $("#diaMaisCedoChegadacidade" + i).val();
-        chegadamaisTarde = $("#diaMaisTardeChegadacidade" + i).val();
+        chegadamaiscedo     = $("#diaMaisCedoChegadacidade" + i).val();
+        chegadamaisTarde    = $("#diaMaisTardeChegadacidade" + i).val();
 
         if (chegadamaiscedo === "" || chegadamaiscedo === null || chegadamaisTarde === "" || chegadamaisTarde === null) {
             $("#diaMaisCedoChegadacidade" + i).val("1");
@@ -242,10 +245,10 @@ function criaDiasPossiveisChegada() {
     let minPerm;
     let maxPerm;
     for (let i = 1; i <= parseInt(numLinhasTabela.get()); i++) {
-        maisCedo = $("#diaMaisCedoChegadacidade" + i).val();
-        maisTarde = $("#diaMaisTardeChegadacidade" + i).val();
-        minPerm = $("#minPermanenciacidade" + i).val();
-        maxPerm = $("#maxPermanenciacidade" + i).val();
+        maisCedo    = $("#diaMaisCedoChegadacidade" + i).val();
+        maisTarde   = $("#diaMaisTardeChegadacidade" + i).val();
+        minPerm     = $("#minPermanenciacidade" + i).val();
+        maxPerm     = $("#maxPermanenciacidade" + i).val();
         let incomingDaysFromI = range(parseInt(maisCedo) + parseInt(minPerm) + 1, parseInt(maisTarde) + parseInt(maxPerm) + 2);
         console.log("incomingDays");
         console.log(incomingDaysFromI);
@@ -441,6 +444,15 @@ Template.tabelaDinamica.helpers({
                 $("#maxPermanenciacidade" + i).attr("id", "maxPermanencia" + consulta);
             }
         }
+
+        // cria arvore de alcancabilidade
+        for (var i = parseInt($("#partidaMaisCedo").val()); i <= parseInt($("#partidaMaisTarde").val()); i++){
+            criaArvore([{}],i,cidades[0],cidades.slice(1,cidades.length));
+        }
+
+        console.log("CELULAS:");
+        console.log(celulas);
+
         return cidades;
     },
 
@@ -501,6 +513,12 @@ Template.cidades.events({
     },
     'click #submit'(event, instance) {
         if (isSubmitted.get() == false) {
+
+            //verifica se tem alguma permanencia vazia
+            if(!validaPermanencias()){
+                return;
+            }
+
             // increment the counter when button is clicked
             isSubmitted.set(true);
 
@@ -515,16 +533,13 @@ Template.cidades.events({
             var dmax = 1; // dias de viagem: 0 ou 1 na Europa
             for (var i = 1; i <= numLinhasTabela.get(); i++) {
                 var soma = parseInt(T.get()) + parseInt(document.getElementById("maxPermanenciacidade" + i).value) + 1 + dmax;
-                console.log("Soma :" + soma);
+                //console.log("Soma :" + soma);
                 T.set(soma); //maxPermanencia{{this}}
             }
 
             //função de intervalos teste
             subIntervalosPossiveis();
             console.log("intervalos possíveis: " + intervalos);
-
-            //verifica se tem alguma permanencia vazia
-            leperm();
 
             // Captura os IDs de destino (valor do campo)
             constroiIDCidadesDestinos();
@@ -536,10 +551,10 @@ Template.cidades.events({
 
             diasChegada = diasChegada.sort();
 
-            console.log("DiasChegada:");
-            console.log(diasChegada);
+            //console.log("DiasChegada:");
+            //console.log(diasChegada);
         }
-        console.log("T: " + T.get());
+        //console.log("T: " + T.get());
     },
 });
 
@@ -593,14 +608,14 @@ Template.celula.events({
             }
         }
 
-        console.log("Intersecoes: ");
+        //console.log("Intersecoes: ");
         console.log(intersecoes);
 
     },
 
     'dblclick .celula': function (event) {
 
-        console.log("evento 2");
+        //console.log("evento 2");
         var $elem = $(event.target);
         //console.log("id do caller: " + elem);
         var regexElem = /(\w+\s*\w*)_(\d+)/g.exec($elem.attr('id'));
@@ -645,3 +660,160 @@ Template.celula.events({
 /*else if(isDiaPermanenciaInOrigem(IDOrigem, diaPartida, diaChegada)){
  return DIA_PERMANENCIA_VIAVEL;
  }*/
+
+/*
+*
+*   INICIO FUNCOES DE ARVORE
+*
+*/
+
+let dMax = 1;
+
+// vetor de dias, cada dia será um array associativo  de cidades
+let celulas = [];
+
+function criaObjCidadePartida(cidade, partida) {
+    return {'cidade': cidade, 'partida': partida};
+}
+
+function listaOpcoes(diaAtual, IDOrigem, IDDestinos) {
+    let opcoes = [];
+    if (IDOrigem !== $("#cidade0").val()) {
+        var chegadaMaisCedo = $("#diaMaisCedoChegada" + IDOrigem).val();
+        var minPerm = $("#minPermanencia" + IDOrigem).val();
+        if (parseInt(diaAtual) >= parseInt(chegadaMaisCedo) && parseInt(diaAtual) <= parseInt(chegadaMaisCedo) + parseInt(minPerm)) {
+            return;
+        }
+    }
+
+    IDDestinos.forEach(function (destino) {
+        // dia chegada for no mesmo dia da partida ou no dia seguinte, d E {0,1}
+        for (var diaChegada = diaAtual; diaChegada <= parseInt(diaAtual) + dMax && diaChegada <= parseInt(T.get()); diaChegada++) {
+            //console.log("destino : "+destino+"dia chegada: "+ diaChegada);
+            if (isTransicaoValida(IDOrigem, diaAtual, destino, diaChegada) > 0) {
+                opcoes.push(criaObjCidadePartida(IDOrigem, diaAtual));
+                //$("#" + destino + "_" + diaChegada).addClass("celulaDestino");
+            }
+        }
+    })
+    return opcoes;
+}
+
+
+function navegaArvore(caminho, origem, destino) {
+
+
+}
+
+function criaArvore(caminho, diaAtual, cidadeAtual, destinosPossiveis) {
+    console.log("cria arvore: "+caminho+" "+diaAtual+" "+cidadeAtual+" "+destinosPossiveis);
+
+    let firstPart;
+    let lastPart;
+    if(cidadeAtual != $("#cidade0").val()){
+        adicionaCelula(diaAtual, cidadeAtual, caminho);
+        firstPart   = parseInt(diaAtual) + parseInt($("#minPermanencia" + cidadeAtual).val()) + 1;
+        lastPart    = parseInt(diaAtual) + parseInt($("#maxPermanencia" + cidadeAtual).val()) + 1;
+    } else {
+        firstPart   = parseInt(diaAtual);
+        lastPart    = parseInt(diaAtual);
+    }
+
+    //console.log("intervalo:" + firstPart + " " + lastPart);
+
+    for(let proxPartidas = firstPart; proxPartidas <= lastPart; proxPartidas++) {
+        let opcoes = listaPossibilidades(cidadeAtual, proxPartidas, destinosPossiveis);
+        console.log("listaPossibilidades:");
+        console.log(opcoes);
+
+        // transicao==conteudo(obj cidade, chegada), diaPartida==indice
+        opcoes.forEach(function (transicao, diaPartida) {
+            transicao.forEach(function (obj) {
+
+                //console.log("transicao: " + diaPartida);
+                //console.log(obj);
+
+                let destinos = caminho;
+                destinos.push({'cidade': cidadeAtual, 'partida': diaPartida});
+
+                // cria vetor temporario dos destinos possiveis
+                let destPossiveis = destinosPossiveis;
+
+                // destPossiveis.splice(destPossiveis.indexOf(cidadeAtual), 1);
+                //console.log("Antes: ");
+                //console.log(destPossiveis);
+
+                // remove cidade de chegada dos destinos possiveis
+                let idxRm = destPossiveis.indexOf(obj['cidade']);
+                if (idxRm > -1) {
+                    destPossiveis.splice(idxRm, 1);
+                } else {
+                    console.log("Nao esperado, indice nao encontrado!");
+                    console.log(obj['cidade']);
+                }
+
+                //console.log("Depois: ");
+                //console.log(destPossiveis);
+                //console.log("Destinos: ");
+                console.log(destinos);
+
+                criaArvore(destinos, proxPartidas, obj['cidade'], destPossiveis);
+
+            })
+        })
+    }
+}
+
+function listaPossibilidades(origem, data, destinosPossiveis) {
+    let partidas = [];
+    let maisCedo;
+    let maisTarde;
+    if (origem == $("#cidade0").val()) {
+        /*maisCedo    = parseInt($("#partidaMaisCedo").val());
+        maisTarde   = parseInt($("#partidaMaisTarde").val());*/
+    } else {
+        /*maisCedo    = parseInt(data) + parseInt($('#minPermanencia' + origem)) + 1;
+        maisTarde   = parseInt(data) + parseInt($('#maxPermanencia' + origem)) + 1;*/
+    }
+    // teste 10h37
+    maisCedo    = data;
+    maisTarde   = data;
+
+    for (let diaPartida = maisCedo; diaPartida <= maisTarde; diaPartida++) {
+        partidas[diaPartida] = [];
+        destinosPossiveis.forEach(function (cidade) {
+            let dias = cidadeAlcancavel(diaPartida, cidade);
+            dias.forEach(function (date) {
+                // objeto:  cidadeDestino, diaChegadaNoDestino
+                partidas[diaPartida].push({'cidade': cidade, 'chegada': date});
+            })
+        })
+    }
+    return partidas;
+}
+
+// retorna lista de dias alcancaveis
+function cidadeAlcancavel(diaPartida, cidadeDestino) {
+    let dias = [];
+    console.log("cidade alcancavel");
+    console.log(diaPartida+" "+cidadeDestino);
+    for (let i = diaPartida; i <= parseInt(diaPartida) + parseInt(dMax); i++) {
+        if (isDiaChegadaInFiLi(i, cidadeDestino)) {
+            dias.push(i);
+        }
+    }
+    return dias;
+}
+
+function adicionaCelula(diaAtual, cidadeAtual, caminho) {
+    console.log("adiciona celula");
+    console.log(diaAtual + " " + cidadeAtual + " " + caminho);
+    if (celulas[diaAtual] == undefined) {
+        celulas[diaAtual] = [];
+    }
+    if (celulas[diaAtual][cidadeAtual] == undefined) {
+        celulas[diaAtual][cidadeAtual] = [];
+    }
+    celulas[diaAtual][cidadeAtual].push(caminho);
+
+}
