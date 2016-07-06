@@ -142,7 +142,7 @@ function criaArvore(caminho,diaPartida,diaChegada,cidadeAnterior,
       // add no comeco do caminho
       //console.log(typeof(caminho));
       //var novoCaminho = caminho.slice();
-      addCidade(cidadeAtual,diaChegada,caminho);
+      //addCidade(cidadeAtual,diaChegada,caminho.slice());
       caminho.unshift({'cidade':cidadeAtual,'partida':diaPartida,
       'chegada': diaChegada, 'anterior':cidadeAnterior});
       // JQUERY AQUI
@@ -156,7 +156,7 @@ function criaArvore(caminho,diaPartida,diaChegada,cidadeAnterior,
    //console.log("pMaisCedo: "+pMaisCedo);
    //console.log("pMaisTarde: "+pMaisTarde);
 
-   var destPossiveis = destinosPossiveis;   
+   var destPossiveis = destinosPossiveis.slice();   
    destPossiveis = destPossiveis.filter(function(item){
       if(item != cidadeAtual){
          console.log("Remocao: "+item+" "+cidadeAtual);
@@ -177,7 +177,7 @@ function criaArvore(caminho,diaPartida,diaChegada,cidadeAnterior,
            
             criaArvore (caminho.slice(), elemento['partida'],
                elemento['chegada'], elemento['anterior'],
-               elemento['cidade'], destPossiveis);
+               elemento['cidade'], destPossiveis.slice());
 
          });
       } else {
@@ -185,7 +185,7 @@ function criaArvore(caminho,diaPartida,diaChegada,cidadeAnterior,
          console.log(caminho);
          console.log("");
          //caminho.shift();
-         addCidade (cidadeAtual, diaChegada, caminho);
+         addCidade (cidadeAtual, diaChegada, caminho.slice());
          return;
       }
    }
@@ -198,7 +198,15 @@ function addCidade(cidade, diaChegada, caminho) {
    if(arvore[diaChegada][cidade] === undefined){
       arvore[diaChegada][cidade] = [];
    }
-   arvore[diaChegada][cidade].push(caminho.slice());
+   var isEqual = false;
+   arvore[diaChegada][cidade].forEach(function(elemento){
+      if(JSON.stringify(elemento) == JSON.stringify(caminho)){
+         isEqual = true;
+      }
+   });
+   if(!isEqual){
+      arvore[diaChegada][cidade].push(caminho.slice());
+   }
 }
 
 function imprimeArvore(){
@@ -208,7 +216,8 @@ function imprimeArvore(){
       var keys = Object.keys(no);
       console.log(keys);
       keys.forEach(function(cidade){
-         console.log("No dia: "+diaChegada+", "+cidade+" e acessivel");   
+         console.log("No dia: "+diaChegada+", "+cidade+" e acessivel");
+         console.log(no[cidade]);
       })
    })
 }
