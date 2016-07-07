@@ -16,6 +16,7 @@ var params      = [];
 var dadosOrigem = [];
 const dMax      = 1;
 var arvore      = [];
+var jsonTree = {};
 
 server.listen (port, hostname, function() { 
    console.log('Server running at http://${hostname}:${port}/'); 
@@ -30,7 +31,7 @@ function addCelula (destinoFinal, caminho){
 }
 
 
-fs.readFile('./input', 'utf8', function (errRF, data){
+fs.readFile('./input2', 'utf8', function (errRF, data){
    var linhas = data.split(/\r\n|\r|\n/);
    //console.log(linhas);
    //console.log(data);      
@@ -61,6 +62,7 @@ fs.readFile('./input', 'utf8', function (errRF, data){
    testaListaPossibilidades();   
 
    testaCriaArvore();
+   writeJSONFile();
 });
 
 
@@ -86,7 +88,7 @@ function testaListaPossibilidades(){
 function testaCriaArvore(){
    for(var i=dadosOrigem[2]; i <= dadosOrigem[3]; i++){
       var arr = [];
-      criaArvore(arr,i,i,"","BH",['Paris','Roma','Berlim']);
+      criaArvore(arr,i,i,"","BH",['Paris','Roma','Berlim','Moscow','Ams']);
    }
    console.log("cria arvore");
    //console.log(arvore);
@@ -143,8 +145,8 @@ function criaArvore(caminho,diaPartida,diaChegada,cidadeAnterior,
       //console.log(typeof(caminho));
       //var novoCaminho = caminho.slice();
       //addCidade(cidadeAtual,diaChegada,caminho.slice());
-      caminho.unshift({'cidade':cidadeAtual,'partida':diaPartida,
-      'chegada': diaChegada, 'anterior':cidadeAnterior});
+      caminho.unshift({'cidade':cidadeAtual,'partida':parseInt(diaPartida),
+      'chegada': parseInt(diaChegada), 'anterior':cidadeAnterior});
       // JQUERY AQUI
       pMaisCedo   = parseInt(diaChegada) + parseInt(params[cidadeAtual]['minPermanencia']) + parseInt(1);
       pMaisTarde  = parseInt(diaChegada) + parseInt(params[cidadeAtual]['maxPermanencia']) + parseInt(1);
@@ -168,8 +170,8 @@ function criaArvore(caminho,diaPartida,diaChegada,cidadeAnterior,
       var opcoes  = listaPossibilidades(cidadeAtual,
          destPossiveis,i); 
          //destinosPossiveis,i); 
-      //console.log("opcoes");
-      //console.log(opcoes);
+      console.log("opcoes");
+      console.log(opcoes);
       if (opcoes.length > 0) {
          //console.log("misterio");
          //console.log(opcoes);
@@ -191,6 +193,7 @@ function criaArvore(caminho,diaPartida,diaChegada,cidadeAnterior,
    }
 }
 
+// nao add caminhamentos repetidos
 function addCidade(cidade, diaChegada, caminho) {
    if(arvore[diaChegada] === undefined){
       arvore[diaChegada] = [];
@@ -227,4 +230,46 @@ function isCityReachableInDay(dia, cidade){
       return true;
    }
    return false;
+}
+
+function addAnterior(a,b){
+   if(typeof(a['anterior'])=='string'){
+      return {'cidade': a['cidade'], 'partida': parseInt(a['partida']),
+         'chegada': parseInt(a['chegada']), 'anterior': b};      
+   } else {
+      return {'cidade': a['cidade'], 'partida': parseInt(a['partida']),
+         'chegada': parseInt(a['chegada']), 'anterior': addAnterior(a['anterior'],b)};
+   }
+}
+
+function writeJSONFile(){
+   console.log("reducing");
+   console.log("");
+   arvore.forEach(function(elemDia,dia){
+      var keys = Object.keys(elemDia);
+      keys.forEach(function(cidade){
+         if(jsonTree[cidade] == undefined){
+            jsonTree[cidade] = [];
+         }
+         //var reversed = elemDia[cidade].reverse();
+         //reversed.forEach(function (trecho){
+         elemDia[cidade].forEach(function (trecho){
+            jsonTree[cidade].push(trecho.reduce(function (a,b){
+               //console.log("qew");
+               //console.log(a);
+               //console.log(b);
+               return addAnterior(a,b);
+               //return {'cidade': b['cidade'], 'partida': b['partida'],
+                //     'chegada': b['chegada'], 'anterior': a};      
+            }));
+            //console.log(JSON.stringify(jsonTree[cidade]));
+            //console.log("");
+         })
+      })
+   })
+   fs.writeFile('json.tree', JSON.stringify(jsonTree),function (err){
+      if(err){
+         console.log("subiu no telhado!");        
+      }
+   });
 }
