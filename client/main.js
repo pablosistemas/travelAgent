@@ -727,7 +727,7 @@ Template.celula.events({
 
     if(arvore.length == 0) {
       criaArvore([], parseInt($("#partidaMaisCedo").val()), parseInt($("#partidaMaisCedo").val()), " ",$("#cidade0").val(), IDCidadesDestinos.slice()); //cidades.slice(1, cidades.length));
-      //console.log("CELULAS:");
+      percorreArvore();
       //console.log(arvore);
     }
 
@@ -976,3 +976,24 @@ function isCidadeAlcancavelEmDia(dia, cidade){
     return (arvore[dia][cidade].length > 0);
   }
 }
+
+function getArvore(){
+  return arvore;
+}
+
+function percorreArvore(){
+  let arvoreRef = getArvore();
+
+  Object.keys(arvoreRef).forEach(function(dia){
+    Object.keys(arvoreRef[dia]).forEach(function(cidade){
+      Object.keys(arvoreRef[dia][cidade]).forEach(function(elem){
+        arvoreRef[dia][cidade][elem].forEach(function(tupla){
+          // console.log(tupla);
+          // Codigo RAMON ALICE
+          // suaFuncao(tupla);
+        });
+      });
+    });
+  });
+}
+
